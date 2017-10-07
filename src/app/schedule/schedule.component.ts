@@ -58,13 +58,15 @@ export class ScheduleComponent implements OnInit {
       this.weekTypes = _.map(this.scheduleWB.SheetNames, val => {
         return {label: val, value: val};
       });
-      this.currentWeekType = this.weekTypes[0];
+      this.currentWeekType = JSON.parse(localStorage.getItem('currentWeekType')) || this.weekTypes[0];
+      this.groupName = localStorage.getItem('groupName');
       this.updateGroupData();
     };
     reader.readAsBinaryString(evt.files[0]);
   }
 
   updateGroupData() {
+    localStorage.setItem('currentWeekType', JSON.stringify(this.currentWeekType.value || this.currentWeekType));
     this.scheduleWS = this.scheduleWB.Sheets[this.currentWeekType];
     this.data = <AOA>(XLSX.utils.sheet_to_json(this.scheduleWS, {header: 1}));
     this.groups = this.scheduleService.transform(this.data);
@@ -74,9 +76,13 @@ export class ScheduleComponent implements OnInit {
         value: key
       };
     });
+    if (this.groupName) {
+      this.renderSchedule();
+    }
   }
 
   renderSchedule() {
+    localStorage.setItem('groupName', this.groupName);
     this.schedule = this.groups[this.groupName].schedule;
   }
 }
