@@ -1,0 +1,37 @@
+<div>
+  <h1>Schedule</h1>
+  <div *ngIf="weekTypes.length; else fileUploader">
+    <p-dropdown [options]="weekTypes" [(ngModel)]="currentWeekType" (onChange)="updateGroupData($event)"
+                placeholder="Select a week"></p-dropdown>
+
+    <p-dropdown [options]="groupOptions" [(ngModel)]="groupName" *ngIf="groupOptions.length"
+                (onChange)="renderSchedule($event)"
+                placeholder="Select Group"></p-dropdown>
+
+    <div class="container" *ngIf="!!schedule">
+      <div class="section">
+        <div class="row">
+          <h2>{{days[selectedDay]}}</h2>
+          <p-slider [(ngModel)]="selectedDay" [min]="0" [max]="4"></p-slider>
+        </div>
+        <div class="row">
+          <div class="col s12 m4">
+            <div class="icon-block">
+              <div *ngFor="let lesson of schedule[days[selectedDay].toLowerCase()]">
+                <p class="light">{{lesson.class}}) {{lesson.name}}</p>
+                <h5 class="center">{{lesson.teacher}}</h5>
+                <p class="light">{{lesson.room}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+  <ng-template #fileUploader>
+    <p-fileUpload mode="basic" customUpload="true" name="demo[]" (uploadHandler)="onFileChange($event)"></p-fileUpload>
+  </ng-template>
+</div>
