@@ -20,7 +20,7 @@ export class ScheduleService {
     _.each(days, (day, ind) => {
       schedule[day] = [];
       _.each(_.range(5), (num) => {
-        const offset = num + 1 + 6 * ind;
+        const offset = num + 6 * ind;
         if (!!data[classIndexes[offset]][index]) {
           const lessonName = data[classIndexes[offset]][index] + ' ' + (data[classIndexes[offset] + 1][index] ||
             '' + (!data[classIndexes[offset] + 3][index] ? ' ' + data[classIndexes[offset] + 2][index] : ''));
@@ -28,7 +28,7 @@ export class ScheduleService {
           teacher = teacher.replace(/\s/g, '').replace(/\.\./g, '\.').replace(/\./g, '\. ');
 
           const room = data[classIndexes[offset] + 4][index];
-          const classIndex = num + 2;
+          const classIndex = num;
           let lesson;
           if (teacher.indexOf('/') > -1) {
             lesson = {
@@ -51,8 +51,7 @@ export class ScheduleService {
               teacher: teacher
             };
           }
-          lesson['class'] = classIndex;
-          schedule[day].push(lesson);
+          schedule[day][classIndex] = lesson;
           let teacherList;
           if (teacher.indexOf('/') > -1) {
             teacherList = _.map(teacher.split('/'), val => typeof val === 'string' ? val.trim() : val);
@@ -69,12 +68,25 @@ export class ScheduleService {
                 this.teachers[teacherName][day] = [];
               }
             }
-            this.teachers[teacherName][day].push({
-              class: classIndex,
-              room: !!room ? room.split(' ')[tIndex] : '',
-              name: lessonName.split('/')[tIndex],
-              group: groupName
-            });
+            let lessonObj;
+            const existLesson = this.teachers[teacherName][day][classIndex];
+            if (!!existLesson) {
+              lessonObj = {
+                room: !!room ? room.split(' ')[tIndex] : '',
+                name: lessonName.split('/')[tIndex],
+                groups: existLesson.group ? [existLesson.group, groupName] : existLesson.groups.concat(groupName)
+              };
+              if (lessonObj.group) {
+                delete lessonObj.group;
+              }
+            } else {
+              lessonObj = {
+                room: !!room ? room.split(' ')[tIndex] : '',
+                name: lessonName.split('/')[tIndex],
+                group: groupName
+              };
+            }
+            this.teachers[teacherName][day][classIndex] = lessonObj;
           });
         }
       });
@@ -88,6 +100,7 @@ export class ScheduleService {
   }
 
   transform(data) {
+    this.teachers = {};
     const ROW_MAP = {
       SPECIALIZATION: 9,
       GROUP: 12

@@ -11,33 +11,42 @@
     </div>
 
     <div class="schedule-wrapper" *ngIf="!!schedule">
-        <div class="schedule-slider">
-          <h2>{{days[selectedDay]}}</h2>
-          <p-slider [(ngModel)]="selectedDay" [min]="0" [max]="4"></p-slider>
-        </div>
-        <div class="schedule-content">
-          <div class="schedule-time-left">left: 20 min</div>
-          <div class="schedule-items">
-              <!--"schedule-active" class for active item-->
-              <div *ngFor="let lesson of schedule[days[selectedDay].toLowerCase()]"
-                   class="schedule-item">
-                <div class="schedule-item-time">
-                  <span>8:00</span>
-                  <span>9:20</span>
-                </div>
-                <div class="schedule-item-container">
-                  <div class="schedule-item-subject">{{lesson.class}}) {{lesson.name}}</div>
-                  <div class="schedule-item-teacher">{{lesson.teacher}}</div>
-                  <div class="schedule-item-room">{{lesson.room}}</div>
-                </div>
+      <div class="schedule-slider">
+        <h2>{{days[selectedDay]}}</h2>
+        <p-slider [(ngModel)]="selectedDay" [min]="0" [max]="4"></p-slider>
+      </div>
+      <div class="schedule-content">
+        <div class="schedule-time-left">left: 20 min</div>
+        <div class="schedule-items">
+          <!--"schedule-active" class for active item-->
+          <div *ngFor="let lesson of schedule[days[selectedDay].toLowerCase()]; let index = index"
+               class="schedule-item">
+            <div *ngIf="lesson">
+
+              <div class="schedule-item-time">
+                <span>8:00</span>
+                <span>9:20</span>
               </div>
-            <div class="schedule-item">
               <div class="schedule-item-container">
-                <div class="schedule-item-break">break: 20 min</div>
+                <div class="schedule-item-subject">{{index+1}}) {{lesson.isBySubGroup?
+                  lesson.subGroupOne.name +'/' + lesson.subGroupTwo.name:lesson.name}}
+                </div>
+                <div class="schedule-item-teacher">{{lesson.isBySubGroup? lesson.subGroupOne.teacher +'/' +
+                  lesson.subGroupTwo.teacher:lesson.teacher}}
+                </div>
+                <div class="schedule-item-room">{{lesson.isBySubGroup? lesson.subGroupOne.room +'/' +
+                  lesson.subGroupTwo.room:lesson.room}}
+                </div>
               </div>
             </div>
           </div>
+          <div class="schedule-item">
+            <div class="schedule-item-container">
+              <div class="schedule-item-break">break: 20 min</div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
 
