@@ -44,6 +44,11 @@ export class ScheduleComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.scheduleService.getRawData()
+      .subscribe((data) => {
+        // const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+        this.onFileChange({files: [data]});
+      });
   }
 
   onFileChange(evt: any) {

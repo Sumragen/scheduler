@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {GoogleApiService} from 'ng-gapi';
 import * as _ from 'lodash';
+import {Http, ResponseContentType} from '@angular/http';
 
 @Injectable()
 export class ScheduleService {
-  constructor(gapiService: GoogleApiService) {
+  constructor(private gapiService: GoogleApiService, private http: Http) {
     gapiService.onLoad().subscribe(() => {
       console.log('log');
     });
@@ -28,6 +29,11 @@ export class ScheduleService {
       });
     });
     return schedule;
+  }
+
+  getRawData() {
+    return this.http.get(`assets/doc_example.xls`, {responseType: ResponseContentType.Blob})
+      .map(res => res.blob());
   }
 
   transform(data) {

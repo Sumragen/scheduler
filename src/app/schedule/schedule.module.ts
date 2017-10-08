@@ -5,9 +5,9 @@ import {ScheduleService} from './schedule.service';
 import {CommonModule} from '@angular/common';
 import {DropdownModule, SliderModule} from 'primeng/primeng';
 import {FileUploadModule} from 'primeng/primeng';
-import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {HttpModule} from '@angular/http';
 
 const gapiClientConfig: NgGapiClientConfig = {
   client_id: 'CLIENT_ID',
@@ -29,6 +29,7 @@ const gapiClientConfig: NgGapiClientConfig = {
     DropdownModule,
     FileUploadModule,
     SliderModule,
+    HttpModule,
     GoogleApiModule.forRoot({
       provide: NG_GAPI_CONFIG,
       useValue: gapiClientConfig
