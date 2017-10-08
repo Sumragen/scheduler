@@ -78,7 +78,8 @@ export class ScheduleComponent implements OnInit {
     this.data = <AOA>(XLSX.utils.sheet_to_json(this.scheduleWS, {header: 1}));
     this.groups = this.scheduleService.transform(this.data).groups;
     this.teachers = this.scheduleService.transform(this.data).teachers;
-  console.log(this.teachers);
+    console.log(this.teachers);
+    console.log(this.groups);
     this.groupOptions = _.map(this.groups, (val, key) => {
       return {
         label: key,

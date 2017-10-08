@@ -6,8 +6,6 @@ import {Http, ResponseContentType} from '@angular/http';
 @Injectable()
 export class ScheduleService {
 
-  groups: object;
-
   teachers: object = {};
 
   constructor(private gapiService: GoogleApiService, private http: Http) {
@@ -26,28 +24,57 @@ export class ScheduleService {
         if (!!data[classIndexes[offset]][index]) {
           const lessonName = data[classIndexes[offset]][index] + ' ' + (data[classIndexes[offset] + 1][index] ||
             '' + (!data[classIndexes[offset] + 3][index] ? ' ' + data[classIndexes[offset] + 2][index] : ''));
-          const teacher = data[classIndexes[offset] + 3][index] || data[classIndexes[offset] + 2][index];
+          let teacher = data[classIndexes[offset] + 3][index] || data[classIndexes[offset] + 2][index];
+          teacher = teacher.replace(/\s/g, '').replace(/\.\./g, '\.').replace(/\./g, '\. ');
+
           const room = data[classIndexes[offset] + 4][index];
           const classIndex = num + 2;
-          schedule[day].push({
-            name: lessonName,
-            room: room || '',
-            teacher: teacher,
-            class: classIndex
-          });
-          if (!this.teachers[teacher]) {
-            this.teachers[teacher] = {
-              [day]: []
+          let lesson;
+          if (teacher.indexOf('/') > -1) {
+            lesson = {
+              isBySubGroup: true,
+              subGroupOne: {
+                room: room.split(' ')[0],
+                teacher: teacher.split('/')[0],
+                name: lessonName.split('/')[0]
+              },
+              subGroupTwo: {
+                room: room.split(' ')[1],
+                teacher: teacher.split('/')[1],
+                name: lessonName.split('/')[1]
+              }
             };
           } else {
-            if (!this.teachers[teacher][day]) {
-              this.teachers[teacher][day] = [];
-            }
+            lesson = {
+              name: lessonName,
+              room: room || '',
+              teacher: teacher
+            };
           }
-          this.teachers[teacher][day].push({
-            class: classIndex,
-            name: lessonName,
-            group: groupName
+          lesson['class'] = classIndex;
+          schedule[day].push(lesson);
+          let teacherList;
+          if (teacher.indexOf('/') > -1) {
+            teacherList = _.map(teacher.split('/'), val => typeof val === 'string' ? val.trim() : val);
+          } else {
+            teacherList = [teacher];
+          }
+          _.each(teacherList, (teacherName, tIndex) => {
+            if (!this.teachers[teacherName]) {
+              this.teachers[teacherName] = {
+                [day]: []
+              };
+            } else {
+              if (!this.teachers[teacherName][day]) {
+                this.teachers[teacherName][day] = [];
+              }
+            }
+            this.teachers[teacherName][day].push({
+              class: classIndex,
+              room: !!room ? room.split(' ')[tIndex] : '',
+              name: lessonName.split('/')[tIndex],
+              group: groupName
+            });
           });
         }
       });
