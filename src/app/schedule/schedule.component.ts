@@ -30,6 +30,8 @@ export class ScheduleComponent implements OnInit {
 
   groups: any;
 
+  teachers: any;
+
   days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   selectedDay: number;
@@ -74,7 +76,9 @@ export class ScheduleComponent implements OnInit {
     localStorage.setItem('currentWeekType', JSON.stringify(this.currentWeekType.value || this.currentWeekType));
     this.scheduleWS = this.scheduleWB.Sheets[this.currentWeekType];
     this.data = <AOA>(XLSX.utils.sheet_to_json(this.scheduleWS, {header: 1}));
-    this.groups = this.scheduleService.transform(this.data);
+    this.groups = this.scheduleService.transform(this.data).groups;
+    this.teachers = this.scheduleService.transform(this.data).teachers;
+  console.log(this.teachers);
     this.groupOptions = _.map(this.groups, (val, key) => {
       return {
         label: key,

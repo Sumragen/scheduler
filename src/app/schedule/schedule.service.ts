@@ -5,13 +5,18 @@ import {Http, ResponseContentType} from '@angular/http';
 
 @Injectable()
 export class ScheduleService {
+
+  groups: object;
+
+  teachers: object = {};
+
   constructor(private gapiService: GoogleApiService, private http: Http) {
     gapiService.onLoad().subscribe(() => {
       console.log('log');
     });
   }
 
-  private fillSchedule(data, index, classIndexes) {
+  private fillSchedule(data, index, classIndexes, groupName) {
     const schedule = {};
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
     _.each(days, (day, ind) => {
@@ -19,11 +24,30 @@ export class ScheduleService {
       _.each(_.range(5), (num) => {
         const offset = num + 1 + 6 * ind;
         if (!!data[classIndexes[offset]][index]) {
+          const lessonName = data[classIndexes[offset]][index] + ' ' + (data[classIndexes[offset] + 1][index] ||
+            '' + (!data[classIndexes[offset] + 3][index] ? ' ' + data[classIndexes[offset] + 2][index] : ''));
+          const teacher = data[classIndexes[offset] + 3][index] || data[classIndexes[offset] + 2][index];
+          const room = data[classIndexes[offset] + 4][index];
+          const classIndex = num + 2;
           schedule[day].push({
-            name: data[classIndexes[offset]][index] + ' ' + (data[classIndexes[offset] + 1][index] || ''),
-            room: data[classIndexes[offset + 1] - 1][index] || '',
-            teacher: data[classIndexes[offset + 1] - 2][index] || data[classIndexes[offset + 1] - 3][index] || '',
-            class: num + 2
+            name: lessonName,
+            room: room || '',
+            teacher: teacher,
+            class: classIndex
+          });
+          if (!this.teachers[teacher]) {
+            this.teachers[teacher] = {
+              [day]: []
+            };
+          } else {
+            if (!this.teachers[teacher][day]) {
+              this.teachers[teacher][day] = [];
+            }
+          }
+          this.teachers[teacher][day].push({
+            class: classIndex,
+            name: lessonName,
+            group: groupName
           });
         }
       });
@@ -59,10 +83,12 @@ export class ScheduleService {
           index: index,
           name: value,
           specialization: data[ROW_MAP.SPECIALIZATION][index],
-          schedule: this.fillSchedule(data, index, classIndexes)
+          schedule: this.fillSchedule(data, index, classIndexes, value)
         };
       }
     });
-    return groups;
+    return {
+      groups, teachers: this.teachers
+    };
   }
 }
