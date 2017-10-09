@@ -32,7 +32,7 @@
                   lesson.subGroupOne.name +'/' + lesson.subGroupTwo.name:lesson.name}}
                 </div>
                 <div class="schedule-item-teacher">{{lesson.isBySubGroup? lesson.subGroupOne.teacher +'/' +
-                  lesson.subGroupTwo.teacher:lesson.teacher}}
+                  lesson.subGroupTwo.teacher:lesson.teacher||lesson.group||lesson.groups}}
                 </div>
                 <div class="schedule-item-room">{{lesson.isBySubGroup? lesson.subGroupOne.room +'/' +
                   lesson.subGroupTwo.room:lesson.room}}

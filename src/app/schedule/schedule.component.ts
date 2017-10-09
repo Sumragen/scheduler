@@ -80,7 +80,7 @@ export class ScheduleComponent implements OnInit {
     this.teachers = this.scheduleService.transform(this.data).teachers;
     console.log(this.teachers);
     console.log(this.groups);
-    this.groupOptions = _.map(this.groups, (val, key) => {
+    this.groupOptions = _.map({...this.groups, ...this.teachers}, (val, key) => {
       return {
         label: key,
         value: key
@@ -93,6 +93,7 @@ export class ScheduleComponent implements OnInit {
 
   renderSchedule() {
     localStorage.setItem('groupName', this.groupName);
-    this.schedule = this.groups[this.groupName].schedule;
+    console.log(this.teachers[this.groupName]);
+    this.schedule = this.groups[this.groupName] ? this.groups[this.groupName].schedule : this.teachers[this.groupName];
   }
 }
