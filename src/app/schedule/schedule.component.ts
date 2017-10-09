@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ScheduleService} from './schedule.service';
 import * as XLSX from 'xlsx';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 
 type AOA = Array<Array<any>>;
 
@@ -32,7 +33,13 @@ export class ScheduleComponent implements OnInit {
 
   teachers: any;
 
+  itsLeft: string;
+
   days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+  emptySix = _.range(6);
+
+  ringsCall = ['8:30', '9:50', '10:10', '11:30', '11:50', '13:10', '13:40', '15:00', '15:20', '16:40', '17:00', '18:20'];
 
   selectedDay: number;
 
@@ -48,9 +55,26 @@ export class ScheduleComponent implements OnInit {
   ngOnInit() {
     this.scheduleService.getRawData()
       .subscribe((data) => {
-        // const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
         this.onFileChange({files: [data]});
       });
+    setInterval(() => {
+      this.itsLeft = '* min';
+      _.every(this.ringsCall, (val, index) => {
+        const nTime = this.ringsCall[index + 1];
+        if (this.isInTimeRange(val, nTime)) {
+          const now = new Date();
+          const nowInMinutes = moment.duration(now.getHours() + ':' + now.getMinutes());
+          this.itsLeft = Math.abs((moment.duration(nowInMinutes).asMinutes() - moment.duration(nTime).asMinutes())) + ' min';
+          return false;
+        }
+        return true;
+      });
+    }, 1000);
+  }
+
+  isInTimeRange(from, to) {
+    const today = new Date().getHours() + ':' + new Date().getMinutes();
+    return moment.duration(today) >= moment.duration(from) && moment.duration(today) < moment.duration(to);
   }
 
   onFileChange(evt: any) {
@@ -78,8 +102,6 @@ export class ScheduleComponent implements OnInit {
     this.data = <AOA>(XLSX.utils.sheet_to_json(this.scheduleWS, {header: 1}));
     this.groups = this.scheduleService.transform(this.data).groups;
     this.teachers = this.scheduleService.transform(this.data).teachers;
-    console.log(this.teachers);
-    console.log(this.groups);
     this.groupOptions = _.map({...this.groups, ...this.teachers}, (val, key) => {
       return {
         label: key,

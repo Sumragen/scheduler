@@ -10,7 +10,7 @@ export class ScheduleService {
 
   constructor(private gapiService: GoogleApiService, private http: Http) {
     gapiService.onLoad().subscribe(() => {
-      console.log('log');
+      console.log('gapi log');
     });
   }
 

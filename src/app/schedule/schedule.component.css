@@ -37,6 +37,7 @@
 .schedule-item {
   position: relative;
   padding: 20px 0;
+  min-height: 40px;
   text-align: center;
 }
 
@@ -56,10 +57,10 @@
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
-  -webkit-box-shadow: 2px 2px 20px rgba(0,255,0,0.3);
-  -moz-box-shadow: 2px 2px 20px rgba(0,255,0,0.3);
-  box-shadow: 2px 2px 20px rgba(0,255,0,0.3);
-  background-color: rgb(219, 255, 210);
+  -webkit-box-shadow: 2px 2px 20px rgba(0, 255, 0, 0.3);
+  -moz-box-shadow: 2px 2px 20px rgba(0, 255, 0, 0.3);
+  box-shadow: 2px 2px 20px rgba(0, 255, 0, 0.3);
+  background: repeating-linear-gradient(-45deg, #f1fff2, #95ffa2 10px, #007900 5px, #009000 7px);
 }
 
 .schedule-item.schedule-active .schedule-item-time {
