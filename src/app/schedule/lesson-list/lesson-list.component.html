@@ -1,0 +1,20 @@
+<div class="schedule-items">
+  <div *ngFor="let index of emptySix"
+       class="schedule-item"
+       [ngClass]="{'schedule-active': isInTimeRange(ringsCall[index*2], ringsCall[index*2+1])}">
+    <div>
+      <div>
+        <div class="schedule-item-time">
+          <span>{{ringsCall[index*2]}}</span>
+          <span>{{ringsCall[index*2 + 1]}}</span>
+        </div>
+        <app-lesson-item [lesson]="getLessons()[index]"></app-lesson-item>
+      </div>
+    </div>
+  </div>
+  <div class="schedule-item" *ngIf="false">
+    <div class="schedule-item-container">
+      <div class="schedule-item-break">break: 20 min</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,4 @@
+<div class="schedule-slider">
+  <h2>{{days[selectedDay]}}</h2>
+  <p-slider [(ngModel)]="selectedDay" [min]="0" [max]="4" (onChange)="dayChanged($event)"></p-slider>
+</div>

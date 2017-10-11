@@ -2,11 +2,15 @@ import {Injectable} from '@angular/core';
 import {GoogleApiService} from 'ng-gapi';
 import * as _ from 'lodash';
 import {Http, ResponseContentType} from '@angular/http';
+import * as moment from 'moment';
 
 @Injectable()
 export class ScheduleService {
 
   teachers: object = {};
+
+  dayOfWeek: number = (new Date().getDay() || 7) - 1;
+  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   constructor(private gapiService: GoogleApiService, private http: Http) {
     gapiService.onLoad().subscribe(() => {
@@ -16,18 +20,19 @@ export class ScheduleService {
 
   private fillSchedule(data, index, classIndexes, groupName) {
     const schedule = {};
-    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-    _.each(days, (day, ind) => {
+    _.each(this.days, (day, ind) => {
       schedule[day] = [];
       _.each(_.range(5), (num) => {
         const offset = num + 6 * ind;
-        if (!!data[classIndexes[offset]][index]) {
-          const lessonName = data[classIndexes[offset]][index] + ' ' + (data[classIndexes[offset] + 1][index] ||
-            '' + (!data[classIndexes[offset] + 3][index] ? ' ' + data[classIndexes[offset] + 2][index] : ''));
-          let teacher = data[classIndexes[offset] + 3][index] || data[classIndexes[offset] + 2][index];
+        const rowIndex = classIndexes[offset];
+        if (!!data[rowIndex][index]) {
+          const lessonName = data[rowIndex][index] + ' ' + (data[rowIndex + 1][index] ||
+            '' + (!data[rowIndex + 3][index] ? ' ' + data[rowIndex + 2][index] : ''));
+
+          let teacher = data[rowIndex + 3][index] || data[rowIndex + 2][index];
           teacher = teacher.replace(/\s/g, '').replace(/\.\./g, '\.').replace(/\./g, '\. ');
 
-          const room = data[classIndexes[offset] + 4][index];
+          const room = data[rowIndex + 4][index];
           const classIndex = num;
           let lesson;
           if (teacher.indexOf('|') > -1) {
@@ -130,5 +135,10 @@ export class ScheduleService {
     return {
       groups, teachers: this.teachers
     };
+  }
+
+  isInTimeRange(from, to) {
+    const today = new Date().getHours() + ':' + new Date().getMinutes();
+    return moment.duration(today) >= moment.duration(from) && moment.duration(today) < moment.duration(to);
   }
 }

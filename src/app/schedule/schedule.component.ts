@@ -35,10 +35,6 @@ export class ScheduleComponent implements OnInit {
 
   itsLeft: string;
 
-  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-  emptySix = _.range(6);
-
   ringsCall = ['8:30', '9:50', '10:10', '11:30', '11:50', '13:10', '13:40', '15:00', '15:20', '16:40', '17:00', '18:20'];
 
   selectedDay: number;
@@ -57,14 +53,15 @@ export class ScheduleComponent implements OnInit {
       .subscribe((data) => {
         this.onFileChange({files: [data]});
       });
+    this.itsLeft = '* min';
+    const ringsCallDuration = _.map(this.ringsCall, val => moment.duration(val).asMinutes());
     setInterval(() => {
-      this.itsLeft = '* min';
       _.every(this.ringsCall, (val, index) => {
         const nTime = this.ringsCall[index + 1];
-        if (this.isInTimeRange(val, nTime)) {
+        if (this.scheduleService.isInTimeRange(val, nTime)) {
           const now = new Date();
           const nowInMinutes = moment.duration(now.getHours() + ':' + now.getMinutes());
-          this.itsLeft = Math.abs((moment.duration(nowInMinutes).asMinutes() - moment.duration(nTime).asMinutes())) + ' min';
+          this.itsLeft = (ringsCallDuration[index + 1] - moment.duration(nowInMinutes).asMinutes()) + ' min';
           return false;
         }
         return true;
@@ -72,10 +69,6 @@ export class ScheduleComponent implements OnInit {
     }, 1000);
   }
 
-  isInTimeRange(from, to) {
-    const today = new Date().getHours() + ':' + new Date().getMinutes();
-    return moment.duration(today) >= moment.duration(from) && moment.duration(today) < moment.duration(to);
-  }
 
   onFileChange(evt: any) {
     if (evt.files.length !== 1) {
@@ -115,7 +108,6 @@ export class ScheduleComponent implements OnInit {
 
   renderSchedule() {
     localStorage.setItem('groupName', this.groupName);
-    console.log(this.teachers[this.groupName]);
     this.schedule = this.groups[this.groupName] ? this.groups[this.groupName].schedule : this.teachers[this.groupName];
   }
 }

@@ -11,47 +11,13 @@
     </div>
 
     <div class="schedule-wrapper" *ngIf="!!schedule">
-      <div class="schedule-slider">
-        <h2>{{days[selectedDay]}}</h2>
-        <p-slider [(ngModel)]="selectedDay" [min]="0" [max]="4"></p-slider>
+      <div>
+        <app-slider></app-slider>
       </div>
       <div class="schedule-content">
         <div class="schedule-time-left">left: {{itsLeft}}</div>
-        <div class="schedule-items">
-          <!--"schedule-active" class for active item-->
-          <div *ngFor="let index of emptySix"
-               class="schedule-item"
-               [ngClass]="{'schedule-active': isInTimeRange(ringsCall[index*2], ringsCall[index*2+1])}">
-            <div>
-
-              <div class="schedule-item-time">
-                <span>{{ringsCall[index*2]}}</span>
-                <span>{{ringsCall[index*2 + 1]}}</span>
-              </div>
-              <div class="schedule-item-container">
-                <div *ngIf="!!schedule[days[selectedDay].toLowerCase()] && schedule[days[selectedDay].toLowerCase()][index]">
-                  <div class="schedule-item-subject">{{index+1}})
-                    {{schedule[days[selectedDay].toLowerCase()][index].isBySubGroup?
-                    schedule[days[selectedDay].toLowerCase()][index].subGroupOne.name +'/' +
-                    schedule[days[selectedDay].toLowerCase()][index].subGroupTwo.name:schedule[days[selectedDay].toLowerCase()][index].name}}
-                  </div>
-                  <div class="schedule-item-teacher">{{schedule[days[selectedDay].toLowerCase()][index].isBySubGroup?
-                    schedule[days[selectedDay].toLowerCase()][index].subGroupOne.teacher +'/' +
-                    schedule[days[selectedDay].toLowerCase()][index].subGroupTwo.teacher:schedule[days[selectedDay].toLowerCase()][index].teacher||schedule[days[selectedDay].toLowerCase()][index].group||schedule[days[selectedDay].toLowerCase()][index].groups}}
-                  </div>
-                  <div class="schedule-item-room">{{schedule[days[selectedDay].toLowerCase()][index].isBySubGroup?
-                    schedule[days[selectedDay].toLowerCase()][index].subGroupOne.room +'/' +
-                    schedule[days[selectedDay].toLowerCase()][index].subGroupTwo.room:schedule[days[selectedDay].toLowerCase()][index].room}}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="schedule-item" *ngIf="false">
-            <div class="schedule-item-container">
-              <div class="schedule-item-break">break: 20 min</div>
-            </div>
-          </div>
+        <div *ngIf="!!schedule">
+          <app-lesson-list [schedule]="schedule"></app-lesson-list>
         </div>
       </div>
     </div>
