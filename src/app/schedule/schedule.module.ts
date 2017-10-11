@@ -8,6 +8,9 @@ import {FileUploadModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpModule} from '@angular/http';
+import {LessonListComponent} from './lesson-list/lesson-list.component';
+import {LessonItemComponent} from './lesson-list/lesson-item/lesson-item.component';
+import {SliderComponent} from './slider/slider.component';
 
 const gapiClientConfig: NgGapiClientConfig = {
   client_id: 'CLIENT_ID',
@@ -20,7 +23,10 @@ const gapiClientConfig: NgGapiClientConfig = {
 
 @NgModule({
   declarations: [
-    ScheduleComponent
+    ScheduleComponent,
+    LessonListComponent,
+    LessonItemComponent,
+    SliderComponent
   ],
   imports: [
     CommonModule,

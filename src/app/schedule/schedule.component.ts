@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ScheduleService} from './schedule.service';
 import * as XLSX from 'xlsx';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 
 type AOA = Array<Array<any>>;
 
@@ -30,7 +31,11 @@ export class ScheduleComponent implements OnInit {
 
   groups: any;
 
-  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  teachers: any;
+
+  itsLeft: string;
+
+  ringsCall = ['8:30', '9:50', '10:10', '11:30', '11:50', '13:10', '13:40', '15:00', '15:20', '16:40', '17:00', '18:20'];
 
   selectedDay: number;
 
@@ -46,10 +51,24 @@ export class ScheduleComponent implements OnInit {
   ngOnInit() {
     this.scheduleService.getRawData()
       .subscribe((data) => {
-        // const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
         this.onFileChange({files: [data]});
       });
+    this.itsLeft = '* min';
+    const ringsCallDuration = _.map(this.ringsCall, val => moment.duration(val).asMinutes());
+    setInterval(() => {
+      _.every(this.ringsCall, (val, index) => {
+        const nTime = this.ringsCall[index + 1];
+        if (this.scheduleService.isInTimeRange(val, nTime)) {
+          const now = new Date();
+          const nowInMinutes = moment.duration(now.getHours() + ':' + now.getMinutes());
+          this.itsLeft = (ringsCallDuration[index + 1] - moment.duration(nowInMinutes).asMinutes()) + ' min';
+          return false;
+        }
+        return true;
+      });
+    }, 1000);
   }
+
 
   onFileChange(evt: any) {
     if (evt.files.length !== 1) {
@@ -74,8 +93,9 @@ export class ScheduleComponent implements OnInit {
     localStorage.setItem('currentWeekType', JSON.stringify(this.currentWeekType.value || this.currentWeekType));
     this.scheduleWS = this.scheduleWB.Sheets[this.currentWeekType];
     this.data = <AOA>(XLSX.utils.sheet_to_json(this.scheduleWS, {header: 1}));
-    this.groups = this.scheduleService.transform(this.data);
-    this.groupOptions = _.map(this.groups, (val, key) => {
+    this.groups = this.scheduleService.transform(this.data).groups;
+    this.teachers = this.scheduleService.transform(this.data).teachers;
+    this.groupOptions = _.map({...this.groups, ...this.teachers}, (val, key) => {
       return {
         label: key,
         value: key
@@ -88,6 +108,6 @@ export class ScheduleComponent implements OnInit {
 
   renderSchedule() {
     localStorage.setItem('groupName', this.groupName);
-    this.schedule = this.groups[this.groupName].schedule;
+    this.schedule = this.groups[this.groupName] ? this.groups[this.groupName].schedule : this.teachers[this.groupName];
   }
 }

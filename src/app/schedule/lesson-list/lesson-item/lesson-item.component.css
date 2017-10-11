@@ -1,0 +1,14 @@
+.schedule-item-subject {
+  margin-bottom: 10px;
+  font-size: 20px;
+  color: #333333;
+}
+
+.schedule-item-teacher {
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.schedule-item-room {
+  font-weight: bold;
+}

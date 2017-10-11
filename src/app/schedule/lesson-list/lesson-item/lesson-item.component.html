@@ -1,0 +1,39 @@
+<div class="schedule-item-container">
+  <div *ngIf="!!lesson">
+    <div *ngIf="!lesson.isBySubGroup; else subGroup">
+      <div class="schedule-item-subject">
+        {{lesson.name}}
+      </div>
+      <div class="schedule-item-teacher">{{lesson.teacher||lesson.group||lesson.groups}}
+      </div>
+      <div class="schedule-item-room">{{lesson.room}}
+      </div>
+    </div>
+    <ng-template #subGroup>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="schedule-item-subject">
+            {{lesson.subGroupOne.name}}
+          </div>
+          <div class="schedule-item-teacher">
+            <div>{{lesson.subGroupOne.teacher}}</div>
+          </div>
+          <div class="schedule-item-room">
+            {{lesson.subGroupOne.room}}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="schedule-item-subject">
+            {{lesson.subGroupTwo.name}}
+          </div>
+          <div class="schedule-item-teacher">
+            <div>{{lesson.subGroupTwo.teacher}}</div>
+          </div>
+          <div class="schedule-item-room">
+            {{lesson.subGroupTwo.room}}
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
