@@ -7,7 +7,7 @@
 
       <p-dropdown [options]="groupOptions" [(ngModel)]="groupName" *ngIf="groupOptions.length"
                   (onChange)="renderSchedule($event)"
-                  placeholder="Select Group"></p-dropdown>
+                  placeholder="Select Group/Teacher" [filter]="true" [filterPlaceholder]="'Filter Group/Teacher'"></p-dropdown>
     </div>
 
     <div class="schedule-wrapper" *ngIf="!!schedule">
@@ -29,7 +29,7 @@
                 <span>{{ringsCall[index*2 + 1]}}</span>
               </div>
               <div class="schedule-item-container">
-                <div *ngIf="schedule[days[selectedDay].toLowerCase()][index]">
+                <div *ngIf="!!schedule[days[selectedDay].toLowerCase()] && schedule[days[selectedDay].toLowerCase()][index]">
                   <div class="schedule-item-subject">{{index+1}})
                     {{schedule[days[selectedDay].toLowerCase()][index].isBySubGroup?
                     schedule[days[selectedDay].toLowerCase()][index].subGroupOne.name +'/' +
@@ -59,6 +59,7 @@
 
   </div>
   <ng-template #fileUploader>
-    <p-fileUpload mode="basic" customUpload="true" name="demo[]" (uploadHandler)="onFileChange($event)"></p-fileUpload>
+    <!--<p-fileUpload mode="basic" customUpload="true" name="demo[]" (uploadHandler)="onFileChange($event)"></p-fileUpload>-->
+    Loading...
   </ng-template>
 </section>

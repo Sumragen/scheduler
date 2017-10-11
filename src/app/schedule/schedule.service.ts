@@ -30,18 +30,18 @@ export class ScheduleService {
           const room = data[classIndexes[offset] + 4][index];
           const classIndex = num;
           let lesson;
-          if (teacher.indexOf('/') > -1) {
+          if (teacher.indexOf('|') > -1) {
             lesson = {
               isBySubGroup: true,
               subGroupOne: {
                 room: room.split(' ')[0],
-                teacher: teacher.split('/')[0],
-                name: lessonName.split('/')[0]
+                teacher: teacher.split('|')[0],
+                name: lessonName.split('|')[0]
               },
               subGroupTwo: {
                 room: room.split(' ')[1],
-                teacher: teacher.split('/')[1],
-                name: lessonName.split('/')[1]
+                teacher: teacher.split('|')[1],
+                name: lessonName.split('|')[1]
               }
             };
           } else {
@@ -53,8 +53,8 @@ export class ScheduleService {
           }
           schedule[day][classIndex] = lesson;
           let teacherList;
-          if (teacher.indexOf('/') > -1) {
-            teacherList = _.map(teacher.split('/'), val => typeof val === 'string' ? val.trim() : val);
+          if (teacher.indexOf('|') > -1) {
+            teacherList = _.map(teacher.split('|'), val => typeof val === 'string' ? val.trim() : val);
           } else {
             teacherList = [teacher];
           }
@@ -73,7 +73,7 @@ export class ScheduleService {
             if (!!existLesson) {
               lessonObj = {
                 room: !!room ? room.split(' ')[tIndex] : '',
-                name: lessonName.split('/')[tIndex],
+                name: lessonName.split('|')[tIndex],
                 groups: existLesson.group ? [existLesson.group, groupName] : existLesson.groups.concat(groupName)
               };
               if (lessonObj.group) {
@@ -82,7 +82,7 @@ export class ScheduleService {
             } else {
               lessonObj = {
                 room: !!room ? room.split(' ')[tIndex] : '',
-                name: lessonName.split('/')[tIndex],
+                name: lessonName.split('|')[tIndex],
                 group: groupName
               };
             }
