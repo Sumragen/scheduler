@@ -18,6 +18,10 @@ export class ScheduleService {
     });
   }
 
+  public setDayOfWeek(day: number) {
+    this.dayOfWeek = day;
+  }
+
   private fillSchedule(data, index, classIndexes, groupName) {
     const schedule = {};
     _.each(this.days, (day, ind) => {

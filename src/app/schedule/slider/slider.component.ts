@@ -1,5 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {ScheduleService} from '../schedule.service';
+import { Component, OnInit } from '@angular/core';
+import { ScheduleService } from '../schedule.service';
+import { MenuItem } from 'primeng/primeng';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-slider',
@@ -8,19 +10,22 @@ import {ScheduleService} from '../schedule.service';
 })
 export class SliderComponent implements OnInit {
 
-  days: string[];
-
   selectedDay: number;
+
+  daysOfWeek: MenuItem;
 
   constructor(private scheduleService: ScheduleService) {
   }
 
   ngOnInit() {
     this.selectedDay = this.scheduleService.dayOfWeek;
-    this.days = this.scheduleService.days;
+    this.daysOfWeek = _.map(this.scheduleService.days, (day: string) => {
+      return {label: day};
+    });
   }
 
-  dayChanged(evt) {
-    this.scheduleService.dayOfWeek = evt.value;
+  selectDay(day: number) {
+    this.selectedDay = day;
+    this.scheduleService.setDayOfWeek(day);
   }
 }
