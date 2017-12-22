@@ -35,7 +35,7 @@ export class ScheduleService {
       room: room,
       teacher: teacher,
       name: lesson
-    }
+    };
   }
 
   private fillSchedule(groupColIndex, groupIndexes, groupName) {

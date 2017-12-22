@@ -86,6 +86,7 @@ export class ScheduleComponent implements OnInit {
           if (this.groupName) {
             this.updateGroupData();
           }
+          this.loadingService.hide();
         }
       });
   }
@@ -128,6 +129,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   updateGroupData() {
+    this.loadingService.show();
     localStorage.setItem('currentWeekType', JSON.stringify(this.currentWeekType.value || this.currentWeekType));
     this.googleService.setSheet(this.currentWeekType)
       .then(() => {
