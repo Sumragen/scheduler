@@ -57,7 +57,15 @@ export class ScheduleService {
           const subLessonName = data[groupRowIndex][groupColIndex + 1];
           const isSubLessonExist = subLessonName === 'x' || !!subLessonName;
           if (subLessonName) {
-            sGLesson = this.parseLesson(groupRowIndex, groupColIndex + 1);
+            if (subLessonName === 'x') {
+              sGLesson = {
+                room: '',
+                lesson: '',
+                teacher: ''
+              }
+            } else {
+              sGLesson = this.parseLesson(groupRowIndex, groupColIndex + 1);
+            }
           }
           let lesson;
           if (isSubLessonExist) {
