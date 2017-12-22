@@ -1,6 +1,5 @@
 <app-loading></app-loading>
 <section class="schedule-section">
-  <h1 class="schedule-title">Schedule</h1>
   <div *ngIf="weekTypes.length">
     <div class="schedule-dropdowns">
       <p-dropdown [options]="weekTypes" [(ngModel)]="currentWeekType" (onChange)="updateGroupData($event)"
@@ -8,7 +7,8 @@
 
       <p-dropdown [options]="groupOptions" [(ngModel)]="groupName" *ngIf="groupOptions.length"
                   (onChange)="renderSchedule($event)"
-                  placeholder="Select Group/Teacher" [filter]="true" [filterPlaceholder]="'Filter Group/Teacher'"></p-dropdown>
+                  placeholder="Select Group/Teacher" [filter]="true"
+                  [filterPlaceholder]="'Filter Group/Teacher'"></p-dropdown>
     </div>
 
     <div class="schedule-wrapper" *ngIf="!!schedule">
@@ -16,7 +16,7 @@
         <app-slider></app-slider>
       </div>
       <div class="schedule-content">
-        <div class="schedule-time-left">left: {{itsLeft}}</div>
+        <div class="schedule-time-left"><i class="fa fa-clock-o clock-icon"></i>left: {{itsLeft}}</div>
         <div *ngIf="!!schedule">
           <app-lesson-list [schedule]="schedule"></app-lesson-list>
         </div>

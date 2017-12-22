@@ -29,5 +29,10 @@
 
 .schedule-time-left {
   margin-bottom: 7px;
-  text-align: right;
+  margin-top: 7px;
+  text-align: left;
+}
+
+.clock-icon {
+  padding-right: 5px;
 }

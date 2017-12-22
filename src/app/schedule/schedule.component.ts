@@ -68,7 +68,10 @@ export class ScheduleComponent implements OnInit {
           if (this.scheduleService.isInTimeRange(val, nTime)) {
             const now = new Date();
             const nowInMinutes = moment.duration(now.getHours() + ':' + now.getMinutes());
-            this.itsLeft = (ringsCallDuration[index + 1] - moment.duration(nowInMinutes).asMinutes()) + ' min';
+            const leftInMinutes = ringsCallDuration[index + 1] - moment.duration(nowInMinutes).asMinutes();
+            const hrLeft = leftInMinutes >= 60 ? Math.floor(leftInMinutes / 60) : 0;
+            const minLeft = leftInMinutes >= 60 ? leftInMinutes % 60 : leftInMinutes;
+            this.itsLeft = `${hrLeft ? hrLeft + ' hr ' : ''} ${minLeft} min`;
             return false;
           }
           return true;
