@@ -1,8 +1,9 @@
-import {Injectable} from '@angular/core';
-import {GoogleApiService} from 'ng-gapi';
+import { Injectable } from '@angular/core';
+import { GoogleApiService } from 'ng-gapi';
 import * as _ from 'lodash';
-import {Http, ResponseContentType} from '@angular/http';
+import { Http, ResponseContentType } from '@angular/http';
 import * as moment from 'moment';
+import { GoogleService } from '../share/google/google.service';
 
 @Injectable()
 export class ScheduleService {
@@ -12,60 +13,66 @@ export class ScheduleService {
   dayOfWeek: number = (new Date().getDay() || 7) - 1;
   days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-  constructor(private gapiService: GoogleApiService, private http: Http) {
-    gapiService.onLoad().subscribe(() => {
-      console.log('gapi log');
-    });
+  constructor(private gapiService: GoogleApiService,
+              private http: Http,
+              private googleService: GoogleService) {
   }
 
   public setDayOfWeek(day: number) {
     this.dayOfWeek = day;
   }
 
-  private fillSchedule(data, index, classIndexes, groupName) {
+  private parseLesson(groupRowIndex, groupColIndex) {
+    const data = this.googleService.getSheet();
+    const lesson = data[groupRowIndex][groupColIndex] + ' ' + (data[groupRowIndex + 1][groupColIndex] ||
+      '' + (!data[groupRowIndex + 3][groupColIndex] ? ' ' + data[groupRowIndex + 2][groupColIndex] : ''));
+
+    let teacher = data[groupRowIndex + 3][groupColIndex] || data[groupRowIndex + 2][groupColIndex];
+    teacher = teacher.replace(/\s/g, '').replace(/\.\./g, '\.').replace(/\./g, '\. ');
+
+    const room = data[groupRowIndex + 4][groupColIndex];
+    return {
+      room: room,
+      teacher: teacher,
+      name: lesson
+    }
+  }
+
+  private fillSchedule(groupColIndex, groupIndexes, groupName) {
     const schedule = {};
-    _.each(this.days, (day, ind) => {
+    const ROW_AMOUNT = 5;
+    const AMOUNT_OF_CLASSES_IN_DAY = 6;
+    const data = this.googleService.getSheet();
+    _.each(this.days, (day, dayIndex) => {
       schedule[day] = [];
-      _.each(_.range(5), (num) => {
-        const offset = num + 6 * ind;
-        const rowIndex = classIndexes[offset];
-        if (!!data[rowIndex][index]) {
-          const lessonName = data[rowIndex][index] + ' ' + (data[rowIndex + 1][index] ||
-            '' + (!data[rowIndex + 3][index] ? ' ' + data[rowIndex + 2][index] : ''));
+      // fill each day of week
+      _.each(_.range(ROW_AMOUNT), (dayRowIndex) => {
+        const offset = dayRowIndex + AMOUNT_OF_CLASSES_IN_DAY * dayIndex;
+        const groupRowIndex = groupIndexes[offset];
+        if (!!data[groupRowIndex][groupColIndex]) {
+          const fGLesson = this.parseLesson(groupRowIndex, groupColIndex);
+          const classIndex = dayRowIndex;
 
-          let teacher = data[rowIndex + 3][index] || data[rowIndex + 2][index];
-          teacher = teacher.replace(/\s/g, '').replace(/\.\./g, '\.').replace(/\./g, '\. ');
-
-          const room = data[rowIndex + 4][index];
-          const classIndex = num;
+          let sGLesson;
+          const subLessonName = data[groupRowIndex][groupColIndex + 1];
+          const isSubLessonExist = subLessonName === 'x' || !!subLessonName;
+          if (subLessonName) {
+            sGLesson = this.parseLesson(groupRowIndex, groupColIndex + 1);
+          }
           let lesson;
-          if (teacher.indexOf('|') > -1) {
+          if (isSubLessonExist) {
             lesson = {
               isBySubGroup: true,
-              subGroupOne: {
-                room: room.split(' ')[0],
-                teacher: teacher.split('|')[0],
-                name: lessonName.split('|')[0]
-              },
-              subGroupTwo: {
-                room: room.split(' ')[1],
-                teacher: teacher.split('|')[1],
-                name: lessonName.split('|')[1]
-              }
+              subGroupOne: fGLesson,
+              subGroupTwo: sGLesson
             };
           } else {
-            lesson = {
-              name: lessonName,
-              room: room || '',
-              teacher: teacher
-            };
+            lesson = fGLesson;
           }
           schedule[day][classIndex] = lesson;
-          let teacherList;
-          if (teacher.indexOf('|') > -1) {
-            teacherList = _.map(teacher.split('|'), val => typeof val === 'string' ? val.trim() : val);
-          } else {
-            teacherList = [teacher];
+          const teacherList = [fGLesson.teacher];
+          if (sGLesson) {
+            teacherList.push(sGLesson.teacher);
           }
           _.each(teacherList, (teacherName, tIndex) => {
             if (!this.teachers[teacherName]) {
@@ -79,10 +86,11 @@ export class ScheduleService {
             }
             let lessonObj;
             const existLesson = this.teachers[teacherName][day][classIndex];
+            // TODO remove that shit! use property groups instead of that bullshit
             if (!!existLesson) {
               lessonObj = {
-                room: !!room ? room.split(' ')[tIndex] : '',
-                name: lessonName.split('|')[tIndex],
+                room: !tIndex ? fGLesson.room : sGLesson.room,
+                name: !tIndex ? fGLesson.name : sGLesson.name,
                 groups: existLesson.group ? [existLesson.group, groupName] : existLesson.groups.concat(groupName)
               };
               if (lessonObj.group) {
@@ -90,8 +98,8 @@ export class ScheduleService {
               }
             } else {
               lessonObj = {
-                room: !!room ? room.split(' ')[tIndex] : '',
-                name: lessonName.split('|')[tIndex],
+                room: !tIndex ? fGLesson.room : sGLesson.room,
+                name: !tIndex ? fGLesson.name : sGLesson.name,
                 group: groupName
               };
             }
@@ -108,11 +116,11 @@ export class ScheduleService {
       .map(res => res.blob());
   }
 
-  transform(data) {
+  newTransform() {
+    const data = this.googleService.getSheet();
     this.teachers = {};
     const ROW_MAP = {
-      SPECIALIZATION: 9,
-      GROUP: 12
+      GROUP: 0
     };
     const COL_MAP = {
       CLASS_NUMBER: 1
@@ -125,14 +133,48 @@ export class ScheduleService {
         classIndexes.push(index);
       }
     });
+
+    console.log(data[ROW_MAP.GROUP]);
+    _.each(data[ROW_MAP.GROUP], (groupNumber, groupIndex) => {
+      if (!!groupNumber && groupNumber.indexOf(prefix) > -1) {
+        groupNumber = groupNumber.split(prefix)[1];
+        groups[groupNumber] = {
+          index: groupIndex,
+          name: groupNumber,
+          schedule: this.fillSchedule(groupIndex, classIndexes, groupNumber)
+        };
+      }
+    });
+    return {
+      groups, teachers: this.teachers
+    };
+  }
+
+  transform(data) {
+    this.teachers = {};
+    const ROW_MAP = {
+      SPECIALIZATION: 9,
+      GROUP: 0
+    };
+    const COL_MAP = {
+      CLASS_NUMBER: 1
+    };
+    const groups: object = {};
+    const prefix = '15-9-';
+    const classIndexes = [];
+    _.each(data, (row, index) => {
+      if (!!row[COL_MAP.CLASS_NUMBER]) {
+        classIndexes.push(index);
+      }
+    });
+    console.log(data[ROW_MAP.GROUP]);
     _.each(data[ROW_MAP.GROUP], (value, index) => {
       if (!!value && value.indexOf(prefix) > -1) {
         value = value.split(prefix)[1];
         groups[value] = {
           index: index,
           name: value,
-          specialization: data[ROW_MAP.SPECIALIZATION][index],
-          schedule: this.fillSchedule(data, index, classIndexes, value)
+          schedule: this.fillSchedule(index, classIndexes, value)
         };
       }
     });

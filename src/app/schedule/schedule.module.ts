@@ -11,16 +11,9 @@ import { HttpModule } from '@angular/http';
 import { LessonListComponent } from './lesson-list/lesson-list.component';
 import { LessonItemComponent } from './lesson-list/lesson-item/lesson-item.component';
 import { SliderComponent } from './slider/slider.component';
-import { StepsModule, MenuItem } from 'primeng/primeng';
-
-const gapiClientConfig: NgGapiClientConfig = {
-  client_id: 'CLIENT_ID',
-  discoveryDocs: ['https://analyticsreporting.googleapis.com/$discovery/rest?version=v4'],
-  scope: [
-    'https://www.googleapis.com/auth/analytics.readonly',
-    'https://www.googleapis.com/auth/analytics'
-  ].join(' ')
-};
+import { StepsModule } from 'primeng/primeng';
+import { HttpClientModule } from '@angular/common/http';
+import { GoogleService } from '../share/google/google.service';
 
 @NgModule({
   declarations: [
@@ -37,16 +30,15 @@ const gapiClientConfig: NgGapiClientConfig = {
     FileUploadModule,
     SliderModule,
     HttpModule,
-    StepsModule,
-    GoogleApiModule.forRoot({
-      provide: NG_GAPI_CONFIG,
-      useValue: gapiClientConfig
-    }),
+    HttpClientModule,
+    StepsModule
   ],
   exports: [
     ScheduleComponent,
   ],
-  providers: [ScheduleService]
+  providers: [
+    ScheduleService
+  ]
 })
 export class ScheduleModule {
 }

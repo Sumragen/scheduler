@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {ScheduleService} from './schedule.service';
+import { Component, OnInit } from '@angular/core';
+import { ScheduleService } from './schedule.service';
 import * as XLSX from 'xlsx';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import { GoogleService } from '../share/google/google.service';
 
 type AOA = Array<Array<any>>;
 
@@ -23,15 +24,15 @@ export class ScheduleComponent implements OnInit {
 
   currentWeekType: any = null;
 
-  groupOptions: any;
+  groupOptions: any = [];
 
   groupName: any;
 
   schedule: any;
 
-  groups: any;
+  groups: any = [];
 
-  teachers: any;
+  teachers: any = [];
 
   itsLeft: string;
 
@@ -39,7 +40,8 @@ export class ScheduleComponent implements OnInit {
 
   selectedDay: number;
 
-  constructor(private scheduleService: ScheduleService) {
+  constructor(private scheduleService: ScheduleService,
+              private googleService: GoogleService) {
     const currentDay = new Date().getDay();
     if (currentDay === 0 || currentDay === 6) {
       this.selectedDay = 0;
@@ -92,18 +94,24 @@ export class ScheduleComponent implements OnInit {
   updateGroupData() {
     localStorage.setItem('currentWeekType', JSON.stringify(this.currentWeekType.value || this.currentWeekType));
     this.scheduleWS = this.scheduleWB.Sheets[this.currentWeekType];
-    this.data = <AOA>(XLSX.utils.sheet_to_json(this.scheduleWS, {header: 1}));
-    this.groups = this.scheduleService.transform(this.data).groups;
-    this.teachers = this.scheduleService.transform(this.data).teachers;
-    this.groupOptions = _.map({...this.groups, ...this.teachers}, (val, key) => {
-      return {
-        label: key,
-        value: key
-      };
-    });
-    if (this.groupName) {
-      this.renderSchedule();
-    }
+    // this.googleService.setSheet(this.currentWeekType);
+    setTimeout(() => {
+      this.data = this.googleService.getSheet();
+      // this.data = <AOA>(XLSX.utils.sheet_to_json(this.scheduleWS, {header: 1}));
+      const dataTransform = this.scheduleService.newTransform();
+      console.log(dataTransform);
+      this.groups = dataTransform.groups;
+      this.teachers = dataTransform.teachers;
+      this.groupOptions = _.map({...dataTransform.groups, ...dataTransform.teachers}, (val, key) => {
+        return {
+          label: key,
+          value: key
+        };
+      });
+      if (this.groupName) {
+        this.renderSchedule();
+      }
+    }, 5000);
   }
 
   renderSchedule() {
