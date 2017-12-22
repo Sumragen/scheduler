@@ -117,6 +117,10 @@ export class ScheduleComponent implements OnInit {
      reader.readAsBinaryString(evt.files[0]);*/
   }
 
+  getSelectedDay() {
+    return this.scheduleService.dayOfWeek;
+  }
+
   renderTable() {
     this.data = this.googleService.getSheet();
     const dataTransform = this.scheduleService.newTransform();

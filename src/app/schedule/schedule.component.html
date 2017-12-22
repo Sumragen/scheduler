@@ -20,9 +20,9 @@
       <div>
         <app-slider></app-slider>
       </div>
-      <div class="schedule-content">
+      <div class="schedule-content" *ngIf="!!schedule && getSelectedDay() < 5">
         <div class="schedule-time-left"><i class="fa fa-clock-o clock-icon"></i>left: {{itsLeft}}</div>
-        <div *ngIf="!!schedule">
+        <div>
           <app-lesson-list [schedule]="schedule"></app-lesson-list>
         </div>
       </div>
