@@ -3,7 +3,8 @@ import { LoadingService } from './loading.service';
 
 @Component({
   selector: 'app-loading',
-  template: `<h1 *ngIf="isVisible()">Loading</h1>`
+  templateUrl: 'loading.component.html',
+  styleUrls: ['loading.component.css']
 })
 export class LoadingComponent {
   constructor(private loadingService: LoadingService) {
