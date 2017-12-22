@@ -4,10 +4,13 @@
 <section class="schedule-section" [ngClass]="{'blur-layer': isHidden()}">
   <div *ngIf="weekTypes.length">
     <div class="schedule-dropdowns">
-      <p-dropdown [options]="weekTypes" [(ngModel)]="currentWeekType" (onChange)="updateGroupData($event)"
+      <p-dropdown [options]="weekTypes" [(ngModel)]="currentWeekType"
+                  [style]="{'width':'205px', 'margin-top': '5px'}"
+                  (onChange)="updateGroupData($event)"
                   placeholder="Select a week"></p-dropdown>
 
       <p-dropdown [options]="groupOptions" [(ngModel)]="groupName" *ngIf="groupOptions.length"
+                  [style]="{'width':'205px', 'margin-top': '5px'}"
                   (onChange)="renderSchedule($event)"
                   placeholder="Select Group/Teacher" [filter]="true"
                   [filterPlaceholder]="'Filter Group/Teacher'"></p-dropdown>
