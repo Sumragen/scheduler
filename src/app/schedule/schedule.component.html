@@ -1,6 +1,7 @@
+<app-loading></app-loading>
 <section class="schedule-section">
   <h1 class="schedule-title">Schedule</h1>
-  <div *ngIf="weekTypes.length; else fileUploader">
+  <div *ngIf="weekTypes.length">
     <div class="schedule-dropdowns">
       <p-dropdown [options]="weekTypes" [(ngModel)]="currentWeekType" (onChange)="updateGroupData($event)"
                   placeholder="Select a week"></p-dropdown>
@@ -21,11 +22,5 @@
         </div>
       </div>
     </div>
-
-
   </div>
-  <ng-template #fileUploader>
-    <!--<p-fileUpload mode="basic" customUpload="true" name="demo[]" (uploadHandler)="onFileChange($event)"></p-fileUpload>-->
-    Loading...
-  </ng-template>
 </section>

@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { GoogleApiModule, NG_GAPI_CONFIG, NgGapiClientConfig } from 'ng-gapi';
 import { ScheduleComponent } from './schedule.component';
 import { ScheduleService } from './schedule.service';
 import { CommonModule } from '@angular/common';
@@ -13,14 +12,16 @@ import { LessonItemComponent } from './lesson-list/lesson-item/lesson-item.compo
 import { SliderComponent } from './slider/slider.component';
 import { StepsModule } from 'primeng/primeng';
 import { HttpClientModule } from '@angular/common/http';
-import { GoogleService } from '../share/google/google.service';
+import { LoadingComponent } from '../share/loading/loading.component';
+import { LoadingService } from '../share/loading/loading.service';
 
 @NgModule({
   declarations: [
     ScheduleComponent,
     LessonListComponent,
     LessonItemComponent,
-    SliderComponent
+    SliderComponent,
+    LoadingComponent
   ],
   imports: [
     CommonModule,
@@ -37,7 +38,8 @@ import { GoogleService } from '../share/google/google.service';
     ScheduleComponent,
   ],
   providers: [
-    ScheduleService
+    ScheduleService,
+    LoadingService
   ]
 })
 export class ScheduleModule {

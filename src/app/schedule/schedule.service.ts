@@ -134,7 +134,6 @@ export class ScheduleService {
       }
     });
 
-    console.log(data[ROW_MAP.GROUP]);
     _.each(data[ROW_MAP.GROUP], (groupNumber, groupIndex) => {
       if (!!groupNumber && groupNumber.indexOf(prefix) > -1) {
         groupNumber = groupNumber.split(prefix)[1];
@@ -167,7 +166,6 @@ export class ScheduleService {
         classIndexes.push(index);
       }
     });
-    console.log(data[ROW_MAP.GROUP]);
     _.each(data[ROW_MAP.GROUP], (value, index) => {
       if (!!value && value.indexOf(prefix) > -1) {
         value = value.split(prefix)[1];

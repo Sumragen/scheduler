@@ -3,6 +3,7 @@ import { GoogleApiService } from 'ng-gapi';
 import * as _ from 'lodash';
 import { Http, ResponseContentType } from '@angular/http';
 import * as moment from 'moment';
+import { LoadingService } from '../loading/loading.service';
 
 @Injectable()
 export class GoogleService {
@@ -16,10 +17,11 @@ export class GoogleService {
   private scope = 'https://www.googleapis.com/auth/spreadsheets.readonly';
   private spreadsheetId = '1bYCmLjh-g_5nDxCCayWwwuZNq3i35tsOQZeFWp5lmx8';
   private sheets: string[];
-  private currentSheetName = 'Л.Т. Б 17-18';
+  private currentSheetName: string;
   private sheet: string[][];
 
-  constructor(private gapiService: GoogleApiService, private http: Http) {
+  constructor(private gapiService: GoogleApiService, private http: Http, private loadingService: LoadingService) {
+    this.loadingService.show();
     this.loadGapi();
   }
 
@@ -39,38 +41,54 @@ export class GoogleService {
         scope: this.scope
       })
         .then(() => {
-          this.readSheets();
-          this.loadSheet();
+          this.readSheets().then(() => {
+            this.currentSheetName = this.sheets[0];
+          });
         });
 
     });
   }
 
   readSheets() {
-    (gapi.client as any).sheets.spreadsheets.get({
+    return (gapi.client as any).sheets.spreadsheets.get({
       spreadsheetId: this.spreadsheetId
     }).then((response) => {
       this.sheets = _.map(response.result.sheets, (sheet: any) => sheet.properties.title);
+      return this.sheets;
     });
   }
 
   loadSheet() {
-    (gapi.client as any).sheets.spreadsheets.values.get({
+    const range = this.currentSheetName + '!A13:CO167';
+    return (gapi.client as any).sheets.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
-      range: this.currentSheetName + '!readData',
+      range: range,
     }).then((response) => {
+      this.loadingService.hide();
       if (response && response.result && response.result.values) {
-        this.sheet = response.result.values;
+        return this.sheet = response.result.values;
       }
     });
   }
 
+  isSheetLoaded(): boolean {
+    return !!this.sheet && !!this.sheets;
+  }
+
+  isSheetsLoaded(): boolean {
+    return !!this.sheets;
+  }
+
   setSheet(sheetName: string) {
     this.currentSheetName = sheetName;
-    this.loadSheet();
+    return this.loadSheet();
   }
 
   getSheet(): string[][] {
     return this.sheet;
+  }
+
+  getSheets(): string[] {
+    return this.sheets;
   }
 }
