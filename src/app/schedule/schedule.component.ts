@@ -94,6 +94,9 @@ export class ScheduleComponent implements OnInit {
       });
   }
 
+  isHidden(): boolean {
+    return this.loadingService.isVisible();
+  }
 
   onFileChange(evt: any) {
     /* if (evt.files.length !== 1) {

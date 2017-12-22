@@ -1,5 +1,7 @@
-<app-loading></app-loading>
-<section class="schedule-section">
+<div style="transition: background-color 1000ms linear;">
+  <app-loading></app-loading>
+</div>
+<section class="schedule-section" [ngClass]="{'blur-layer': isHidden()}">
   <div *ngIf="weekTypes.length">
     <div class="schedule-dropdowns">
       <p-dropdown [options]="weekTypes" [(ngModel)]="currentWeekType" (onChange)="updateGroupData($event)"

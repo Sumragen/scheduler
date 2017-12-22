@@ -1,5 +1,5 @@
-<div *ngIf="isVisible()">
-  <div class="loading-container">
+<div [ngStyle]="{ display: isVisible() ? '' : 'none' }">
+  <div class="loading-container" [ngStyle]="{ 'background-color': isVisible() ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)' }">
     <div class="loading">
       <div class="spinner">
         <div class="mask">
