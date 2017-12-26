@@ -54,15 +54,16 @@ export class ScheduleService {
           const classIndex = dayRowIndex;
 
           let sGLesson;
-          const subLessonName = data[groupRowIndex][groupColIndex + 1];
-          const isSubLessonExist = subLessonName === 'x' || !!subLessonName;
-          if (subLessonName) {
+          const subLessonTeacherName = data[groupRowIndex + 3][groupColIndex + 1] || data[groupRowIndex + 2][groupColIndex + 1];
+          const isSubLessonExist = subLessonTeacherName === 'x' || !!subLessonTeacherName;
+          if (subLessonTeacherName) {
+            const subLessonName = data[groupRowIndex][groupColIndex + 1];
             if (subLessonName === 'x') {
               sGLesson = {
                 room: '',
                 lesson: '',
                 teacher: ''
-              }
+              };
             } else {
               sGLesson = this.parseLesson(groupRowIndex, groupColIndex + 1);
             }
