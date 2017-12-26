@@ -22,10 +22,10 @@ export class ScheduleService {
     this.dayOfWeek = day;
   }
 
-  private parseLesson(groupRowIndex, groupColIndex) {
+  private parseLesson(groupRowIndex, groupColIndex, fGLName ?: string) {
     const data = this.googleService.getSheet();
-    const lesson = data[groupRowIndex][groupColIndex] + ' ' + (data[groupRowIndex + 1][groupColIndex] ||
-      '' + (!data[groupRowIndex + 3][groupColIndex] ? ' ' + data[groupRowIndex + 2][groupColIndex] : ''));
+    const lesson = data[groupRowIndex][groupColIndex] ? data[groupRowIndex][groupColIndex] + ' ' + (data[groupRowIndex + 1][groupColIndex] ||
+      '' + (!data[groupRowIndex + 3][groupColIndex] ? ' ' + data[groupRowIndex + 2][groupColIndex] : '')) : fGLName;
 
     let teacher = data[groupRowIndex + 3][groupColIndex] || data[groupRowIndex + 2][groupColIndex];
     teacher = teacher.replace(/\s/g, '').replace(/\.\./g, '\.').replace(/\./g, '\. ');
@@ -65,7 +65,7 @@ export class ScheduleService {
                 teacher: ''
               };
             } else {
-              sGLesson = this.parseLesson(groupRowIndex, groupColIndex + 1);
+              sGLesson = this.parseLesson(groupRowIndex, groupColIndex + 1, fGLesson.name);
             }
           }
           let lesson;
